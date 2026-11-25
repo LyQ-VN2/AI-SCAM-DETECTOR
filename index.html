@@ -1,0 +1,457 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Scam Detector</title>
+
+    <!-- Cài đặt ứng dụng -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#174b91">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eaf3ff, #f7faff);
+            color: #18345d;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #174b91, #3478cf);
+            color: white;
+            text-align: center;
+            padding: 45px 15px;
+        }
+
+        .logo {
+            font-size: 48px;
+        }
+
+        header h1 {
+            font-size: 32px;
+            margin: 12px 0;
+        }
+
+        header p {
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 35px auto;
+            padding: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px #18345d18;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .description {
+            line-height: 1.6;
+            color: #60748e;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 170px;
+            padding: 16px;
+            border: 2px solid #d5e3f5;
+            border-radius: 13px;
+            font-size: 16px;
+            resize: vertical;
+            outline: none;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea:focus {
+            border-color: #3478cf;
+            box-shadow: 0 0 0 3px #3478cf18;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .analyze-btn {
+            flex: 2;
+            background: #2868b9;
+            color: white;
+        }
+
+        .clear-btn {
+            flex: 1;
+            background: #eaf1fa;
+            color: #24538c;
+        }
+
+        button:hover {
+            filter: brightness(0.94);
+            transform: translateY(-1px);
+        }
+
+        #result {
+            display: none;
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 14px;
+            line-height: 1.6;
+        }
+
+        #result h3 {
+            margin-top: 0;
+        }
+
+        .safe {
+            background: #e3f8eb;
+            border: 1px solid #55b77a;
+        }
+
+        .warning {
+            background: #fff3d8;
+            border: 1px solid #e3b84d;
+        }
+
+        .danger {
+            background: #ffe7e7;
+            border: 1px solid #e16b6b;
+        }
+
+        .score {
+            font-size: 17px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .tips {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 14px;
+            background: #edf5ff;
+        }
+
+        .tips h3 {
+            margin-top: 0;
+        }
+
+        .tips li {
+            margin-bottom: 9px;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #62758d;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 35px 12px;
+            }
+
+            header h1 {
+                font-size: 25px;
+            }
+
+            .container {
+                margin: 15px auto;
+                padding: 12px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">🛡️</div>
+        <h1>AI SCAM DETECTOR</h1>
+        <p>Hệ thống nhận diện và cảnh báo tin nhắn có dấu hiệu lừa đảo</p>
+    </header>
+
+    <main class="container">
+
+        <section class="card">
+
+            <h2>🔍 KIỂM TRA TIN NHẮN</h2>
+
+            <p class="description">
+                Nhập hoặc dán nội dung tin nhắn mà bạn nghi ngờ.
+                Hệ thống sẽ kiểm tra các dấu hiệu đáng ngờ và đưa ra cảnh báo.
+            </p>
+
+            <textarea
+                id="message"
+                placeholder="Ví dụ: Tài khoản của bạn có nguy cơ bị khóa. Vui lòng xác minh ngay..."
+            ></textarea>
+
+            <div class="buttons">
+                <button class="analyze-btn" onclick="analyzeMessage()">
+                    🔎 PHÂN TÍCH TIN NHẮN
+                </button>
+
+                <button class="clear-btn" onclick="clearMessage()">
+                    ↻ XÓA
+                </button>
+            </div>
+
+            <div id="result" aria-live="polite"></div>
+
+        </section>
+
+        <section class="tips">
+            <h3>🔐 MẸO PHÒNG TRÁNH LỪA ĐẢO</h3>
+            <ul>
+                <li>Không cung cấp mã OTP hoặc mật khẩu cho người khác.</li>
+                <li>Không nhấn vào đường link không rõ nguồn gốc.</li>
+                <li>Không chuyển tiền khi chưa xác minh người nhận.</li>
+                <li>Kiểm tra thông tin qua website hoặc số điện thoại chính thức.</li>
+                <li>Không tin ngay những lời mời trúng thưởng bất thường.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>🛡️ AI SCAM DETECTOR | DỰ ÁN KHOA HỌC KỸ THUẬT</p>
+        <p>Cùng công nghệ, chủ động phòng tránh lừa đảo!</p>
+        <p>© 2026 AI Scam Detector</p>
+    </footer>
+
+    <script>
+        function analyzeMessage() {
+
+            const message = document
+                .getElementById("message")
+                .value.trim()
+                .toLowerCase();
+
+            const result = document.getElementById("result");
+
+            if (message === "") {
+                alert("Vui lòng nhập nội dung tin nhắn!");
+                return;
+            }
+
+            let score = 0;
+            let reasons = [];
+
+            const patterns = [
+                {
+                    words: [
+                        "chuyển tiền", "nộp phí", "đóng phí",
+                        "vay", "chuyển khoản", "ck",
+                        "học phí", "viện phí", "phạt tiền",
+                        "chuyển trước", "gửi trước", "mượn tiền",
+                        "đóng phạt"
+                    ],
+                    points: 2,
+                    reason: "Có yêu cầu chuyển tiền hoặc đóng phí."
+                },
+                {
+                    words: [
+                        "trúng thưởng", "nhận thưởng",
+                        "quà tặng", "nhận quà",
+                        "nhận ưu đãi", "khách hàng thứ",
+                        "trúng số"
+                    ],
+                    points: 2,
+                    reason: "Thông báo nhận thưởng hoặc ưu đãi cần xác minh."
+                },
+                {
+                    words: [
+                        "mật khẩu", "mã otp",
+                        "mã xác thực", "mã pin"
+                    ],
+                    points: 3,
+                    reason: "Có nội dung liên quan đến thông tin bảo mật."
+                },
+                {
+                    words: [
+                        "tài khoản bị khóa",
+                        "tài khoản bị đóng",
+                        "nguy cơ bị khóa"
+                    ],
+                    points: 2,
+                    reason: "Thông báo tài khoản gặp sự cố."
+                },
+                {
+                    words: [
+                        "xác minh ngay", "khẩn cấp",
+                        "ngay lập tức", "ngay bây giờ"
+                    ],
+                    points: 2,
+                    reason: "Sử dụng ngôn ngữ thúc giục, tạo áp lực."
+                },
+                {
+                    words: [
+                        "nhấn vào link",
+                        "bấm vào đường link",
+                        "truy cập đường dẫn",
+                        "truy cập đường link",
+                        "đường link"
+                    ],
+                    points: 3,
+                    reason: "Yêu cầu truy cập đường dẫn."
+                },
+                {
+                    words: [
+                        "công an", "viện kiểm sát",
+                        "vi phạm giao thông"
+                    ],
+                    points: 1,
+                    reason: "Nhắc đến cơ quan chức năng; cần xác minh nguồn gửi."
+                }
+            ];
+
+            patterns.forEach(pattern => {
+                if (
+                    pattern.words.some(word =>
+                        message.includes(word)
+                    )
+                ) {
+                    score += pattern.points;
+                    reasons.push(pattern.reason);
+                }
+            });
+
+            // Kiểm tra đường dẫn
+            if (/https?:\/\/|www\./i.test(message)) {
+                score += 2;
+                reasons.push("Tin nhắn có chứa đường dẫn cần kiểm tra.");
+            }
+
+            let title = "";
+            let advice = "";
+            let className = "";
+
+            if (score >= 5) {
+                title = "⚠️ CẢNH BÁO: NHIỀU DẤU HIỆU ĐÁNG NGỜ";
+                advice = "Không nhấn vào đường link, không chuyển tiền và không cung cấp mã OTP. Hãy xác minh qua kênh chính thức.";
+                className = "danger";
+
+            } else if (score >= 2) {
+                title = "⚡ CẦN THẬN TRỌNG";
+                advice = "Hãy kiểm tra kỹ người gửi và nội dung trước khi thực hiện yêu cầu.";
+                className = "warning";
+
+            } else {
+                title = "✅ CHƯA PHÁT HIỆN DẤU HIỆU RÕ RÀNG";
+                advice = "Chưa tìm thấy dấu hiệu đáng ngờ theo các tiêu chí hiện có. Điều này không đảm bảo tin nhắn an toàn.";
+                className = "safe";
+            }
+
+            // Hiển thị kết quả
+            result.className = className;
+            result.replaceChildren();
+
+            const heading = document.createElement("h3");
+            heading.textContent = title;
+            result.appendChild(heading);
+
+            const scoreText = document.createElement("p");
+            scoreText.className = "score";
+            scoreText.textContent = "Điểm cảnh báo: " + score;
+            result.appendChild(scoreText);
+
+            const label = document.createElement("p");
+            label.textContent = "KẾT QUẢ PHÂN TÍCH:";
+            result.appendChild(label);
+
+            if (reasons.length > 0) {
+
+                const list = document.createElement("ul");
+
+                reasons.forEach(reason => {
+                    const item = document.createElement("li");
+                    item.textContent = reason;
+                    list.appendChild(item);
+                });
+
+                result.appendChild(list);
+
+            } else {
+
+                const empty = document.createElement("p");
+                empty.textContent = "Chưa phát hiện dấu hiệu đáng ngờ theo các tiêu chí hiện có.";
+                result.appendChild(empty);
+            }
+
+            const recommendation = document.createElement("p");
+            recommendation.textContent = "💡 Khuyến nghị: " + advice;
+            result.appendChild(recommendation);
+
+            const note = document.createElement("small");
+            note.textContent =
+                "Lưu ý: Công cụ sử dụng quy tắc từ khóa, chưa phải mô hình AI học máy. Kết quả chỉ mang tính tham khảo và không thể xác định chắc chắn một tin nhắn có lừa đảo hay không.";
+            result.appendChild(note);
+
+            result.style.display = "block";
+        }
+
+        // Xóa nội dung
+        function clearMessage() {
+            document.getElementById("message").value = "";
+
+            const result = document.getElementById("result");
+            result.replaceChildren();
+            result.style.display = "none";
+            result.className = "";
+        }
+
+        // Đăng ký Service Worker để hỗ trợ cài đặt ứng dụng
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js")
+                    .then(() => console.log("App đã sẵn sàng!"))
+                    .catch(error => console.log("Lỗi Service Worker:", error));
+            });
+        }
+    </script>
+
+</body>
+</html>
